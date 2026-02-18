@@ -1509,16 +1509,15 @@ async function saveStatus() {
   btn.textContent = '⏳ Saving…';
 
   try {
-    const res = await fetch(url + '?action=updateStatus', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        trackingId: activeOrder.trackingId,
-        status:     selectedStatus,
-        note:       note,
-      }),
+    // Use GET to avoid CORS — Apps Script blocks cross-origin POST from browsers
+    const params = new URLSearchParams({
+      action:     'updateStatus',
+      trackingId: activeOrder.trackingId,
+      status:     selectedStatus,
+      note:       note,
     });
 
+    const res  = await fetch(url + '?' + params.toString());
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
